@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiniGoogle '98 — Retro Search Engine & PageRank Simulator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Retro Top System Announcement Bar -->
+  <header class="retro-top-banner">
+    <div class="banner-left">
+      <span>&#128187; STANFORD UNIVERSITY CS DEPT.</span>
+      <span class="badge-stanford">1998 PROTOTYPE</span>
+      <span style="font-weight: normal; opacity: 0.9;">Project BackRub / MiniGoogle Alpha</span>
+    </div>
+    <nav class="banner-nav">
+      <a href="javascript:void(0)" onclick="window.MiniGoogle.goHome()">Home</a>
+      <a href="#how-search-works-section" id="link-how-it-works">How Search Works</a>
+      <a href="javascript:void(0)" class="trigger-about-modal">About</a>
+      <a href="javascript:void(0)" class="trigger-archive-modal">1998 Archive</a>
+    </nav>
+  </header>
+
+  <!-- ======================================================================
+       VIEW 1: HOMEPAGE (AUTHENTIC 1998 INTERFACE)
+       ====================================================================== -->
+  <main id="home-view">
+    <div class="home-logo-wrap">
+      <div class="google-logo google-logo-large" onclick="window.MiniGoogle.goHome()" title="MiniGoogle '98">
+        <span class="logo-m">M</span><span class="logo-i1">i</span><span class="logo-n">n</span><span class="logo-i2">i</span><span class="logo-g1">G</span><span class="logo-o1">o</span><span class="logo-o2">o</span><span class="logo-g2">g</span><span class="logo-l">l</span><span class="logo-e">e</span><span class="logo-excl">!</span>
+        <span class="google-beta-badge">BETA</span>
+      </div>
+    </div>
+
+    <div class="home-tagline">Searching the web since 1998.</div>
+
+    <!-- Search Box and Autocomplete -->
+    <div class="search-box-wrap">
+      <div class="search-input-container">
+        <input 
+          type="text" 
+          id="home-search-input" 
+          class="retro-input search-input-main" 
+          placeholder="Search the web (try 'pizza', 'pune food', 'biryani')..." 
+          autocomplete="off" 
+          autofocus
+        >
+      </div>
+      <div id="home-suggestions" class="suggestions-dropdown"></div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="search-buttons-row">
+      <button id="btn-home-search" class="retro-btn btn-primary">
+        &#128269; MiniGoogle Search
+      </button>
+      <button id="btn-home-lucky" class="retro-btn">
+        &#127808; I'm Feeling Lucky
+      </button>
+      <button id="btn-home-random" class="retro-btn">
+        &#127922; Random Search
+      </button>
+      <button id="btn-open-tuning" class="retro-btn">
+        &#9881; Tuning Controls
+      </button>
+    </div>
+
+    <!-- Subtext -->
+    <div class="search-subtext">
+      The world's information, one link at a time.
+    </div>
+
+    <!-- Mode Selector Panel (Two Generations + Comparison) -->
+    <div class="mode-selector-panel">
+      <div class="mode-panel-title">
+        <span>CHOOSE SEARCH GENERATION:</span>
+        <span class="proto-badge">ALGORITHM LAB</span>
+      </div>
+
+      <div class="mode-radio-group">
+        <!-- Mode A: Pre-Google (1997) -->
+        <label class="mode-option-card" data-mode="classic">
+          <input type="radio" name="search-mode-radio" value="classic">
+          <div class="mode-option-label">
+            <span class="name">Mode A: Pre-Google (1997)</span>
+            <span class="desc">Classic Keyword Search. Ranks by word frequency and density only. Zero link analysis.</span>
+          </div>
+        </label>
+
+        <!-- Mode B: Google PageRank (1998) -->
+        <label class="mode-option-card active" data-mode="pagerank">
+          <input type="radio" name="search-mode-radio" value="pagerank" checked>
+          <div class="mode-option-label">
+            <span class="name">Mode B: Google (1998+)</span>
+            <span class="desc">PageRank Algorithm. Ranks by incoming backlinks authority combined with keyword relevance.</span>
+          </div>
+        </label>
+
+        <!-- Comparison Mode -->
+        <label class="mode-option-card" data-mode="comparison">
+          <input type="radio" name="search-mode-radio" value="comparison">
+          <div class="mode-option-label">
+            <span class="name">1997 vs 1998 Comparison</span>
+            <span class="desc">Side-by-side split view. Highlights rank shifts and spam penalization.</span>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Sample Queries / Chips -->
+    <div class="quick-queries-wrap">
+      <div class="quick-queries-label">Test Queries (Click to Search):</div>
+      <div class="quick-chips">
+        <button class="query-chip" data-query="pizza">pizza (Classic Showdown)</button>
+        <button class="query-chip" data-query="pune food">pune food</button>
+        <button class="query-chip" data-query="biryani">biryani (Single Page)</button>
+        <button class="query-chip" data-query="canteen chai">canteen chai</button>
+        <button class="query-chip" data-query="pizza dough">pizza dough</button>
+        <button class="query-chip" data-query="misal dosa">misal dosa</button>
+        <button class="query-chip" data-query="cheap eats">cheap eats</button>
+      </div>
+    </div>
+
+    <!-- Search History Section -->
+    <div id="history-section" class="history-section">
+      <div class="history-header">
+        <span>Recent Searches:</span>
+        <a href="javascript:void(0)" onclick="window.MiniGoogle.clearHistory()" style="color: #666; font-size: 10px;">[Clear History]</a>
+      </div>
+      <div id="history-list" class="history-list"></div>
+    </div>
+  </main>
+
+  <!-- ======================================================================
+       VIEW 2: SEARCH RESULTS PAGE (AUTHENTIC 1998 RESULTS INTERFACE)
+       ====================================================================== -->
+  <div id="results-view">
+    <!-- Results Header Bar -->
+    <div class="results-header-bar">
+      <div class="header-inner">
+        <div class="results-logo-wrap">
+          <div class="google-logo google-logo-small" onclick="window.MiniGoogle.goHome()" title="Return to MiniGoogle Home">
+            <span class="logo-m">M</span><span class="logo-i1">i</span><span class="logo-n">n</span><span class="logo-i2">i</span><span class="logo-g1">G</span><span class="logo-o1">o</span><span class="logo-o2">o</span><span class="logo-g2">g</span><span class="logo-l">l</span><span class="logo-e">e</span><span class="logo-excl">!</span>
+          </div>
+        </div>
+
+        <div class="results-search-form">
+          <input 
+            type="text" 
+            id="results-search-input" 
+            class="retro-input results-search-input" 
+            placeholder="Search query..."
+          >
+          <button id="btn-results-search" class="retro-btn btn-primary">&#128269; Search</button>
+          <button id="btn-results-lucky" class="retro-btn">&#127808; Lucky</button>
+        </div>
+
+        <div class="results-controls-group">
+          <div class="mode-toggles-wrap">
+            <button class="retro-btn btn-sm btn-mode-toggle" data-mode="classic">1997 Classic</button>
+            <button class="retro-btn btn-sm btn-mode-toggle active" data-mode="pagerank">1998 PageRank</button>
+            <button class="retro-btn btn-sm btn-mode-toggle" data-mode="comparison">1997 vs 1998</button>
+          </div>
+          <button class="retro-btn btn-sm" onclick="document.getElementById('config-modal').classList.add('active')">
+            &#9881; Tuning
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Subbar (Stats, Mode Badge, Sort Dropdown) -->
+    <div class="results-subbar">
+      <div class="subbar-inner">
+        <div class="results-count-time" id="results-stats-text">
+          Searched 6 web pages.
+        </div>
+
+        <div class="active-mode-badge-wrap">
+          <span id="results-mode-badge" class="mode-badge badge-mode-b">
+            MODE B: Google PageRank
+          </span>
+        </div>
+
+        <div class="sort-selector-wrap">
+          <label for="sort-selector">Sort by:</label>
+          <select id="sort-selector" class="retro-select">
+            <option value="score">Algorithm Score (Default)</option>
+            <option value="pagerank">PageRank Authority</option>
+            <option value="frequency">Keyword Frequency</option>
+            <option value="density">Keyword Density</option>
+            <option value="title">Website Title (A-Z)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Body Content -->
+    <div class="results-body">
+      <!-- Comparison Mode Explanation Banner -->
+      <div id="comparison-banner" class="comparison-banner" style="display: none;">
+        <div class="banner-icon">&#128227;</div>
+        <div>
+          <strong>1997 vs 1998 Comparison Mode:</strong> Before Google, search engines often relied heavily on page content and keyword matching. Google's PageRank introduced link-based authority as an additional signal, defeating spam tactics like keyword repetition.
+        </div>
+      </div>
+
+      <!-- Single Mode Results Container -->
+      <div id="results-container"></div>
+
+      <!-- Comparison Mode 2-Column Side-by-Side Container -->
+      <div id="comparison-container" class="comparison-columns-container" style="display: none;">
+        <!-- Left Column: 1997 Pre-Google -->
+        <div class="comparison-col">
+          <div class="comparison-col-header">
+            <span>MODE A: 1997 CLASSIC KEYWORD SEARCH</span>
+            <span class="col-header-tag">NO LINKS</span>
+          </div>
+          <div id="comparison-col-1997"></div>
+        </div>
+
+        <!-- Right Column: 1998 Google PageRank -->
+        <div class="comparison-col">
+          <div class="comparison-col-header">
+            <span>MODE B: 1998 GOOGLE PAGERANK SEARCH</span>
+            <span class="col-header-tag" style="background: #d4edda; color: #155724; font-weight: bold;">LINK AUTHORITY</span>
+          </div>
+          <div id="comparison-col-1998"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       RANKING VISUALIZATION: "HOW SEARCH WORKS" SECTION
+       Interactive SVG Link Network Graph & Convergence Trace
+       ====================================================================== -->
+  <section id="how-search-works-section" class="graph-section-wrapper container">
+    <div class="graph-section-header">
+      <h2>&#128065; How Search Works: Link Graph Network & PageRank Convergence</h2>
+      <span style="font-size: 11px; color: #555;">Click any node to inspect equations</span>
+    </div>
+
+    <div class="graph-section-body">
+      <div class="graph-interactive-container">
+        <!-- Left Column: Interactive SVG Graph -->
+        <div class="svg-viewport-wrapper">
+          <svg id="link-graph-svg"></svg>
+          <div style="position: absolute; bottom: 8px; left: 10px; font-size: 10px; color: #555; background: rgba(255,255,255,0.85); padding: 3px 6px; border: 1px solid #ccc; border-radius: 2px;">
+            <span style="color: #1b8828;">■ Green Dotted:</span> Incoming Links &bull;
+            <span style="color: #e65100;">■ Orange:</span> Outgoing Links &bull;
+            Node size = PageRank
+          </div>
+        </div>
+
+        <!-- Right Column: Live Node Inspector Panel -->
+        <div id="node-inspector-panel" class="node-inspector-panel"></div>
+      </div>
+
+      <!-- Convergence Trace Table -->
+      <div class="convergence-wrapper">
+        <div class="convergence-title">
+          &#9881; Iterative PageRank Power Method Convergence (30 Iterations):
+        </div>
+        <div class="table-scroll-wrap">
+          <table class="retro-table">
+            <thead>
+              <tr>
+                <th>Iteration</th>
+                <th>Page 1 (Food Guide)</th>
+                <th>Page 2 (Best Pizza) &#9733;</th>
+                <th>Page 3 (Canteen Blog)</th>
+                <th>Page 4 (Home Recipes)</th>
+                <th>Page 5 (Cheap Eats)</th>
+                <th>Page 6 (Pizza Spam)</th>
+                <th>Max Delta (&Delta;)</th>
+              </tr>
+            </thead>
+            <tbody id="convergence-tbody"></tbody>
+          </table>
+        </div>
+        <div style="font-size: 10px; color: #666; margin-top: 6px;">
+          * Formula: <code>PR(A) = (1 - d) + d × Σ(PR(T)/C(T))</code> with damping factor <code>d = 0.85</code>.
+          Page 2 attains supreme authority because Pages 1, 3, 4, and 5 all link to it. Page 6 has 0 incoming links and settles at the random baseline <code>(1 - d) = 0.15</code>.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       SIMULATED 1998 WEB BROWSER MODAL (NETSCAPE / IE 4.0)
+       ====================================================================== -->
+  <div id="browser-modal" class="modal-overlay">
+    <div class="browser-window">
+      <!-- Title Bar -->
+      <div class="win-titlebar">
+        <div class="title-text">
+          <span>&#127760;</span>
+          <span id="browser-win-title">Netscape Navigator - [Website]</span>
+        </div>
+        <div class="win-controls">
+          <button class="win-btn" onclick="window.MiniGoogle.closeBrowserModal()">_</button>
+          <button class="win-btn" onclick="window.MiniGoogle.closeBrowserModal()">&#9633;</button>
+          <button class="win-btn" onclick="window.MiniGoogle.closeBrowserModal()">X</button>
+        </div>
+      </div>
+
+      <!-- Menubar -->
+      <div class="browser-menubar">
+        <span><u>F</u>ile</span>
+        <span><u>E</u>dit</span>
+        <span><u>V</u>iew</span>
+        <span><u>G</u>o</span>
+        <span><u>B</u>ookmarks</span>
+        <span><u>O</u>ptions</span>
+        <span><u>D</u>irectory</span>
+        <span><u>H</u>elp</span>
+      </div>
+
+      <!-- Navigation Toolbar -->
+      <div class="browser-toolbar">
+        <button id="btn-browser-back" class="retro-btn btn-sm">&#9664; Back</button>
+        <button id="btn-browser-forward" class="retro-btn btn-sm">Forward &#9654;</button>
+        <button class="retro-btn btn-sm" onclick="window.MiniGoogle.closeBrowserModal()">&#8962; Home</button>
+        <button class="retro-btn btn-sm" onclick="window.location.reload()">Reload</button>
+        <span style="border-left: 1px solid #999; height: 16px; margin: 0 4px;"></span>
+        <button class="retro-btn btn-sm" onclick="window.print()">Print</button>
+        <button class="retro-btn btn-sm" onclick="window.MiniGoogle.closeBrowserModal()">Stop</button>
+      </div>
+
+      <!-- Location / Address Bar -->
+      <div class="browser-addressbar">
+        <span style="font-weight: bold; color: #333;">Location:</span>
+        <input type="text" id="browser-address-input" class="retro-input address-input" readonly>
+        <button class="retro-btn btn-sm" onclick="alert('Navigating simulated 1998 web...')">Go</button>
+      </div>
+
+      <!-- Webpage Viewport -->
+      <div id="browser-viewport" class="browser-content-viewport"></div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       TUNING & CONFIGURATION CONTROLS MODAL
+       ====================================================================== -->
+  <div id="config-modal" class="modal-overlay">
+    <div class="config-modal-card">
+      <div class="win-titlebar" style="margin: -16px -16px 14px -16px;">
+        <span class="title-text">&#9881; Search Engine Tuning Parameters</span>
+        <button class="win-btn" id="btn-close-tuning">X</button>
+      </div>
+
+      <p style="font-size: 11px; color: #555; margin-bottom: 14px;">
+        Experiment with PageRank mathematical variables and observe how ranking positions update dynamically across both algorithms.
+      </p>
+
+      <!-- Slider 1: Damping Factor d -->
+      <div class="slider-group">
+        <div class="slider-label-row">
+          <span>PageRank Damping Factor (d):</span>
+          <span id="damping-val" style="color: #000080; font-family: var(--font-mono);">0.85</span>
+        </div>
+        <input type="range" id="damping-slider" class="retro-slider" min="0.00" max="0.99" step="0.05" value="0.85">
+        <div class="slider-help">
+          Probability that a random web surfer follows a hyperlink rather than jumping to a random page. Default is 0.85.
+        </div>
+      </div>
+
+      <!-- Slider 2: Relevance vs PageRank Weight -->
+      <div class="slider-group">
+        <div class="slider-label-row">
+          <span>Score Weighting (Keyword Relevance vs PageRank):</span>
+          <span id="weight-val" style="color: #1b8828; font-family: var(--font-mono);">50% Rel / 50% PR</span>
+        </div>
+        <input type="range" id="weight-slider" class="retro-slider" min="0" max="100" step="5" value="50">
+        <div class="slider-help">
+          Controls the balance between on-page content relevance and off-page link graph authority.
+        </div>
+      </div>
+
+      <div class="modal-actions-row">
+        <button id="btn-reset-tuning" class="retro-btn">
+          &#8635; Reset Defaults (d=0.85, 50/50)
+        </button>
+        <button class="retro-btn btn-primary btn-close-modal">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       ABOUT MODAL: HISTORICAL BACKGROUND
+       ====================================================================== -->
+  <div id="about-modal" class="modal-overlay">
+    <div class="info-modal-card">
+      <div class="win-titlebar" style="margin: -18px -18px 14px -18px;">
+        <span class="title-text">&#128218; About MiniGoogle '98 & PageRank History</span>
+        <button class="win-btn btn-close-modal">X</button>
+      </div>
+
+      <h2>The Dawn of Modern Search (1998)</h2>
+      <p>
+        In 1996–1998, Ph.D. students <strong>Larry Page</strong> and <strong>Sergey Brin</strong> at Stanford University started a research project called <strong>BackRub</strong>. At that time, search engines like AltaVista, Lycos, and Excite ranked web pages primarily by counting how many times query keywords appeared in the text.
+      </p>
+      <p>
+        This keyword-centric approach had a fatal vulnerability: <strong>Keyword Stuffing</strong>. Unscrupulous webmasters could repeat words like <em>"pizza pizza pizza"</em> hundreds of times in white text on a white background, hijacking top rankings without providing any real value.
+      </p>
+      <p>
+        Larry Page realized that <strong>hyperlinks are citations</strong>: when Page A links to Page B, it is casting a vote of confidence. Moreover, votes from important pages carry more weight than votes from obscure pages.
+      </p>
+      <p>
+        This mathematical breakthrough—formalized as the <strong>PageRank algorithm</strong>—served as the foundation for Google when it incorporated in September 1998 in a Menlo Park garage.
+      </p>
+
+      <div class="modal-actions-row">
+        <button class="retro-btn btn-primary btn-close-modal">Close Window</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       1998 ARCHIVE MODAL: SEARCH LANDSCAPE
+       ====================================================================== -->
+  <div id="archive-modal" class="modal-overlay">
+    <div class="info-modal-card">
+      <div class="win-titlebar" style="margin: -18px -18px 14px -18px;">
+        <span class="title-text">&#128190; 1998 Search Engine Historical Archive</span>
+        <button class="win-btn btn-close-modal">X</button>
+      </div>
+
+      <h2>Search Engines of 1998</h2>
+      <p>
+        Before Google dominated search, the World Wide Web was navigated through a diverse constellation of early portals and crawlers:
+      </p>
+
+      <ul>
+        <li><strong>AltaVista (1995):</strong> The speed champion built by Digital Equipment Corporation (DEC). Indexed the full text of millions of pages, but suffered heavily from spam.</li>
+        <li><strong>Yahoo! Directory (1994):</strong> A human-edited hierarchical catalog maintained by "surfers" who reviewed submissions manually.</li>
+        <li><strong>Lycos (1994):</strong> Originated at Carnegie Mellon University; pioneered document prefix matching and term weighting.</li>
+        <li><strong>Excite (1995):</strong> Offered "concept-based searching" using relational statistical models.</li>
+        <li><strong>Ask Jeeves (1997):</strong> Promoted natural language question answering with a butler persona.</li>
+      </ul>
+
+      <p style="font-size: 11px; color: #555; background: #fff; padding: 8px; border: 1px solid #ccc;">
+        <strong>Fun 1998 Fact:</strong> Google's first production server rack was famously built out of Lego bricks in Stanford's Gates Computer Science building because it was cheap, modular, and easy to expand!
+      </p>
+
+      <div class="modal-actions-row">
+        <button class="retro-btn btn-primary btn-close-modal">Close Archive</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       RETRO FOOTER
+       ====================================================================== -->
+  <footer class="retro-footer">
+    <div class="footer-links">
+      <a href="javascript:void(0)" class="trigger-about-modal">About MiniGoogle</a> &bull;
+      <a href="#how-search-works-section">How Search Works</a> &bull;
+      <a href="javascript:void(0)" class="trigger-archive-modal">1998 Archive</a> &bull;
+      <a href="javascript:void(0)" onclick="window.MiniGoogle.resetSimulation()">Reset Simulation</a>
+    </div>
+    <div class="footer-credits">
+      MiniGoogle '98 &bull; Built with Vanilla HTML5, CSS3, and JavaScript &bull; Inspired by Google Stanford Prototype 1998
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
